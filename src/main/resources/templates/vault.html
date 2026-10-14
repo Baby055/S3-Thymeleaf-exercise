@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Digital Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,800&family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #ebe4d1;
+            --paper-dark: #dcd3ba;
+            --ink: #1f1c16;
+            --ink-soft: #5c5646;
+            --stamp: #b5391c;
+            --moss: #44502e;
+            --ochre: #c58a1c;
+            --rule: #1f1c16;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 48px 20px 80px;
+            background-color: var(--paper);
+            background-image:
+                repeating-linear-gradient(0deg, transparent 0 31px, rgba(31,28,22,.07) 31px 32px);
+            color: var(--ink);
+            font-family: "Work Sans", system-ui, sans-serif;
+            line-height: 1.5;
+        }
+
+        .sheet {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        /* ---------- En-tête ---------- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 24px;
+            border-bottom: 4px double var(--rule);
+            padding-bottom: 18px;
+            margin-bottom: 40px;
+        }
+
+        .kicker {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .75rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin: 0 0 6px;
+        }
+
+        h1 {
+            font-family: "Fraunces", Georgia, serif;
+            font-weight: 800;
+            font-size: clamp(2.2rem, 6vw, 3.6rem);
+            line-height: .95;
+            margin: 0;
+            letter-spacing: -.02em;
+        }
+
+        .seal {
+            flex-shrink: 0;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            color: var(--stamp);
+            border: 3px solid var(--stamp);
+            border-radius: 6px;
+            padding: 8px 12px;
+            transform: rotate(-5deg);
+            opacity: .85;
+            text-align: center;
+        }
+
+        /* ---------- Titres de section ---------- */
+        h3 {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 1.5rem;
+            margin: 0 0 18px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        h3 span.n {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .8rem;
+            color: var(--stamp);
+            border: 1.5px solid var(--stamp);
+            padding: 1px 7px;
+        }
+
+        section { margin-bottom: 56px; }
+
+        /* ---------- Formulaire ---------- */
+        form {
+            background: #f6f1e3;
+            border: 2px solid var(--ink);
+            box-shadow: 7px 7px 0 var(--ink);
+            padding: 28px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px 28px;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field.full { grid-column: 1 / -1; }
+
+        label {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .72rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        input[type="text"],
+        select {
+            font: inherit;
+            font-size: 1.05rem;
+            padding: 8px 2px;
+            background: transparent;
+            color: var(--ink);
+            border: 0;
+            border-bottom: 2px solid var(--ink);
+            border-radius: 0;
+            outline: none;
+        }
+        input[type="text"]:focus,
+        select:focus {
+            border-bottom-color: var(--stamp);
+            background: rgba(197,138,28,.12);
+        }
+
+        input[type="file"] {
+            font: inherit;
+            font-size: .9rem;
+            padding: 14px;
+            border: 2px dashed var(--ink-soft);
+            background: var(--paper);
+            cursor: pointer;
+        }
+        input[type="file"]::file-selector-button {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            background: var(--ink);
+            color: var(--paper);
+            border: 0;
+            padding: 8px 14px;
+            margin-right: 14px;
+            cursor: pointer;
+        }
+        input[type="file"]:hover { border-color: var(--stamp); }
+
+        button {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .85rem;
+            font-weight: 500;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            background: var(--stamp);
+            color: #fbf6e8;
+            border: 2px solid var(--ink);
+            padding: 12px 26px;
+            cursor: pointer;
+            justify-self: start;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform .1s, box-shadow .1s;
+        }
+        button:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+        button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+
+        /* ---------- Tableau ---------- */
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f6f1e3;
+            border-top: 3px solid var(--ink);
+            border-bottom: 3px solid var(--ink);
+        }
+
+        th {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .7rem;
+            font-weight: 500;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            text-align: left;
+            color: var(--ink-soft);
+            padding: 12px 14px;
+            border-bottom: 1.5px solid var(--ink);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px dashed var(--ink-soft);
+            vertical-align: middle;
+        }
+        tbody tr:last-child td { border-bottom: 0; }
+        tbody tr:hover { background: rgba(197,138,28,.14); }
+
+        td:first-child {
+            font-family: "IBM Plex Mono", monospace;
+            color: var(--stamp);
+            font-weight: 500;
+        }
+        td:nth-child(2) {
+            font-family: "Fraunces", Georgia, serif;
+            font-weight: 500;
+            font-size: 1.05rem;
+        }
+        td:nth-child(4),
+        td:nth-child(5) {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .8rem;
+            color: var(--ink-soft);
+            word-break: break-all;
+        }
+
+        .tag {
+            display: inline-block;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .7rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 3px 9px;
+            border: 2px solid currentColor;
+            border-radius: 3px;
+            transform: rotate(-2deg);
+            white-space: nowrap;
+        }
+        .tag-id { color: var(--stamp); }
+        .tag-tr { color: var(--moss); }
+        .tag-di { color: var(--ochre); }
+
+        .open-link {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: .78rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 2px solid var(--stamp);
+            white-space: nowrap;
+        }
+        .open-link:hover { background: var(--stamp); color: #fbf6e8; }
+
+        .empty {
+            text-align: center;
+            color: var(--ink-soft);
+            font-style: italic;
+            padding: 36px 14px;
+        }
+
+        @media (max-width: 640px) {
+            form { grid-template-columns: 1fr; padding: 20px; }
+            header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="sheet">
+
+    <header>
+        <div>
+            <p class="kicker">Official records · Secure storage</p>
+            <h1>Student Digital Vault</h1>
+        </div>
+        <div class="seal">Registered<br>Archive</div>
+    </header>
+
+    <section>
+        <h3><span class="n">01</span> Upload a new Document</h3>
+
+        <form th:action="@{/vault/upload}" method="POST" enctype="multipart/form-data">
+            <div class="field">
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" name="studentName" placeholder="Full name" required>
+            </div>
+
+            <div class="field">
+                <label for="documentType">Document Type</label>
+                <select id="documentType" name="documentType" required>
+                    <option value="ID Card">Identity Card</option>
+                    <option value="Transcript">Academic Transcript</option>
+                    <option value="Diploma">Official Diploma</option>
+                </select>
+            </div>
+
+            <div class="field full">
+                <label for="file">Select File (PDF or Image)</label>
+                <input type="file" id="file" name="file" accept=".pdf,image/*" required>
+            </div>
+
+            <button type="submit">File it away</button>
+        </form>
+    </section>
+
+    <section>
+        <h3><span class="n">02</span> Your uploaded files</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Student</th>
+                    <th>Type</th>
+                    <th>Path key</th>
+                    <th>Upload Date</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${documentsList == null or #lists.isEmpty(documentsList)}">
+                    <td colspan="6" class="empty">The vault is empty. Nothing has been filed yet.</td>
+                </tr>
+                <tr th:each="doc : ${documentsList}">
+                    <td th:text="${doc.id}"></td>
+                    <td th:text="${doc.studentName}"></td>
+                    <td>
+                        <span class="tag"
+                              th:text="${doc.documentType}"
+                              th:classappend="${doc.documentType == 'ID Card'} ? 'tag-id' : (${doc.documentType == 'Transcript'} ? 'tag-tr' : 'tag-di')"></span>
+                    </td>
+                    <td th:text="${doc.pathKey}"></td>
+                    <td th:text="${doc.uploadDate}"></td>
+                    <td>
+                        <a class="open-link" th:href="${doc.presignedUrl}" target="_blank" rel="noopener">Open file →</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>
