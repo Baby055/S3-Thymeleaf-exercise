@@ -2,11 +2,10 @@ package com.sombiniaina.project.repository.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.*;
-import software.amazon.awssdk.annotations.NotNull;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.*;
+import software.amazon.awssdk.annotations.NotNull;
 
 @Entity
 @Getter
@@ -15,12 +14,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class JDocument {
-    @Id private UUID id;
+  @Id private UUID id;
 
-    @NotNull private String studentName;
-    @NotNull private String documentType;
+  @NotNull private String studentName;
+  @NotNull private String documentType;
 
-    private String s3key;
+  private String s3key;
 
-    @NotNull private Instant uploadDate;
+  @NotNull private Instant uploadDate;
 }
